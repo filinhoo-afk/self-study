@@ -11,8 +11,8 @@
 - [x] Git (стоит)
 - [x] Расширение Python в VS Code (стоит)
 - [x] Настроить Git: `user.name` и `user.email` (настроено)
-- [ ] Аккаунт на GitHub
-- [ ] `git init` в этой папке, первый коммит, репозиторий `self-study` на GitHub, push
+- [x] Аккаунт на GitHub (filinhoo-afk)
+- [x] `git init` в этой папке, первый коммит, репозиторий `self-study` на GitHub, push
 
 ### Вс 27.09 — диагностика
 - [ ] Регистрация на Stepik, курс «Поколение Python: курс для начинающих»
