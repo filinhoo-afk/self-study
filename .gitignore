@@ -5,6 +5,10 @@ __pycache__/
 venv/
 .ipynb_checkpoints/
 
+# Секреты
+.env
+*.key
+
 # Редакторы и ОС
 .vscode/
 .idea/
