@@ -185,9 +185,50 @@ df.groupby([...])['Style'].nunique().value_counts()        # у скольких
 
 ```python
 sel = data[(data['Make'] == make) & (data['Model'] == model)]
-sel.shape[0] == 0     # пустая выборка: DataFrame с колонками, но без строк (не ошибка и не None)
-sel['Style'].mode()[0]    # на пустой выборке даст ошибку → сначала проверить shape[0]
+sel.empty             # пустая выборка: DataFrame с колонками, но без строк (не ошибка и не None)
+modes = sel['Style'].mode()
+modes.iloc[0]         # на пустом результате mode() даст IndexError → сначала проверить modes.empty
 ```
+
+- `.empty` (без скобок) читается лучше, чем `shape[0] == 0`; `shape[0]` — число строк.
+- Пустой результат при «ничего нет»: `np.nan` (а не строка `'нет данных'`): `Series.mean()` и др. в pandas тоже дают `nan` на пустом, а строка ломает арифметику (`TypeError`). `nan` расползается молча — писать в комментарии; проверять через `pd.isna(x)`, не `x == nan`.
+- `mode()` возвращает **все** значения с максимальной частотой по возрастанию (`iloc[0]` при равенстве — наименьшее). `dropna=True` по умолчанию: `NaN` в моде не учитываются, даже если их больше всех; все `NaN` → пустой `Series`.
+- `.value_counts()['Rare']` упадёт с `KeyError`, если метки нет; безопаснее `(df['Model'] == 'Rare').sum() / len(df)`.
+
+### groupby (Kaggle, урок 4)
+
+Идея: **разделить на группы → посчитать по каждой → собрать**. Строк в результате столько, сколько групп.
+
+```python
+df.groupby('brand')['price'].mean()           # Series: индекс — группы
+df.groupby('brand').size()                    # сколько строк в каждой группе
+df.groupby(['brand', 'year'])['price'].mean() # две колонки → MultiIndex (два уровня индекса)
+df.groupby('brand')['price'].agg(['min', 'max', 'mean'])   # несколько функций, названия в кавычках
+df.groupby('brand')['price'].mean().reset_index().sort_values('price', ascending=False)
+```
+
+| | `groupby(...)` | `value_counts()` |
+|---|---|---|
+| что умеет | любое вычисление по группам (mean, max, sum, size, agg, apply) | только считает, сколько раз встречается каждое значение |
+| порядок | по ключу группы (текст — по алфавиту) | по убыванию частоты |
+
+`value_counts()` ≈ `groupby(col).size()` + сортировка по убыванию.
+
+- `reset_index()` переносит уровни индекса в обычные столбцы (после `groupby` по двум колонкам удобно для фильтра и сортировки).
+- `reset_index(drop=True)` выбрасывает старый индекс; без `drop=True` он станет лишним столбцом `index` (после `sort_values` там будут перемешанные старые номера).
+- `agg(['min', 'max'])` — без кавычек `min`/`max` даёт FutureWarning.
+- `df['a']` → `Series`, `df[['a']]` → `DataFrame` (список столбцов, даже из одного).
+
+### Сортировка
+
+```python
+df.sort_values('price')                          # по возрастанию
+df.sort_values('price', ascending=False)         # по убыванию
+df.sort_values(['brand', 'price'])               # сначала по brand, внутри — по price
+df.sort_index()                                  # по индексу
+```
+
+После сортировки индекс сохраняет старые номера строк (1, 0, …) — при необходимости `reset_index(drop=True)`.
 
 ### Числовые колонки и сохранение
 
