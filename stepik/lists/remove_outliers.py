@@ -9,7 +9,6 @@ for _ in range(n):
 
 smallest = min(x)
 largest = max(x)
-
 x.remove(smallest)
 x.remove(largest)
 

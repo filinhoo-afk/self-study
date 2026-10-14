@@ -4,7 +4,6 @@
 
 n = int(input())
 s = []
-
 for _ in range(n):
     line = input()
     if line not in s:

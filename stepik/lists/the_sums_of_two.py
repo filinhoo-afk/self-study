@@ -4,8 +4,8 @@
 
 
 n = int(input())
-result = [] # итоговый список
 x = int(input())
+result = [] # итоговый список
 
 for _ in range(n - 1):
     y = int(input())
